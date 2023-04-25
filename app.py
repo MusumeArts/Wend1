@@ -8,5 +8,5 @@ from langchain.llms import OpenAI
 os.environ['OPEN_API_KEY']= apikey
 
 # App framework
-st.title('🦜🔗Wend1')
-prompt = st.text_input('Plug in your prompt here')
+st.title('🏳️‍⚧️ 🎹Wend1')
+prompt = st.text_input('Describe Your Desired Sound')
