@@ -4,6 +4,7 @@ from apikey import apikey
 
 import streamlit as st
 from langchain.llms import OpenAI
+from transformers import GPT3Tokenizer, GPT3LMHeadModel
 
 os.environ['OPEN_API_KEY']= apikey
 
