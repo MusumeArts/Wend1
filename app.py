@@ -4,10 +4,13 @@ import streamlit as st
 import openai
 from apikey import apikey
 
+os.environ['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']= apikey
+openai.api_key = apikey
+
 from langchain.llms import OpenAI
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 # Set up OpenAPI key
-os.environ['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']= apikey
+
 # Set up OpenAI Client
 openai_model = 'text-davinci-003'
 
@@ -20,9 +23,8 @@ if prompt:
         engine=openai_model,
         prompt=prompt,
         max_tokens=50
-            )
+    )        
     generated_text = response.choices[0].text
     st.write(generated_text)
-
-# Print the generated text
-print(response.choices[0].text)
+    
+    print(response.choices[0].text)
