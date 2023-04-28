@@ -1,44 +1,28 @@
 # Bring in deps
 import os
+import streamlit as st
+import openai
 from apikey import apikey
 
-import streamlit as st
 from langchain.llms import OpenAI
-from transformers import GPT3Tokenizer, GPT3LMHeadModel
-
-os.environ['OPEN_API_KEY']= apikey
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
+# Set up OpenAPI key
+os.environ['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']= apikey
+# Set up OpenAI Client
+openai_model = 'text-davinci-003'
 
 # App framework
 st.title('🏳️‍⚧️ 🎹Wend1')
+# Generate Text
 prompt = st.text_input('Describe Your Desired Sound')
+if prompt:
+    response = openai.Completion.create(
+        engine=openai_model,
+        prompt=prompt,
+        max_tokens=50
+            )
+    generated_text = response.choices[0].text
+    st.write(generated_text)
 
-import streamlit as st
-from transformers import GPT3Tokenizer, GPT3LMHeadModel
-
-# Load the pre-trained GPT-3 model and tokenizer
-tokenizer = GPT3Tokenizer.from_pretrained('gpt3')
-model = GPT3LMHeadModel.from_pretrained('gpt3')
-
-def generate_patch(input_text):
-    input_ids = tokenizer.encode(input_text, return_tensors='pt')
-    output = model.generate(input_ids)
-    generated_patch = tokenizer.decode(output[0], skip_special_tokens=True)
-    return generated_patch
-
-# Define the Streamlit app
-def app():
-    st.title('Serum Patch Generator')
-    
-    # Collect user input
-    input_text = st.text_input('Describe the patch you want:')
-    
-    # Generate the patch
-    if input_text:
-        generated_patch = generate_patch(input_text)
-        st.audio(generated_patch)
-
-# Start the app
-if __name__ == '__main__':
-    app()
-
-
+# Print the generated text
+print(response.choices[0].text)
