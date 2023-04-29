@@ -4,7 +4,7 @@ import streamlit as st
 import openai
 from apikey import apikey
 
-os.environ['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']= apikey
+os.environ['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']= apikey
 openai.api_key = apikey
 
 from langchain.llms import OpenAI
