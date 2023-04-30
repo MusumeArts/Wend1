@@ -4,67 +4,38 @@ import streamlit as st
 import openai
 from apikey import apikey
 
-os.environ['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']= apikey
+os.environ['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'] = apikey
 openai.api_key = apikey
 
-from langchain.llms import OpenAI
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
-# Set up OpenAPI key
+tokenizer = GPT2Tokenizer.from_pretrained("microsoft/DialoGPT-large")
+model = GPT2LMHeadModel.from_pretrained("microsoft/DialoGPT-large")
 
 # Set up OpenAI Client
-openai_model = 'text-davinci-003'
+openai_model = 'text-davinci-002'
 
 # Set up OpenAI Playground Trained Model
 playground_model = "Wendy"
 
 # Initialize the prompt for generating patch parameters
 # Set prompt
-prompt = """(f"Generate a {input()} patch.\n\n"
-          f"Oscillator 1:\n"
-          f"Wavetable Position: {randint(0, 255)}\n"
-          f"Unison Spread: {randint(0, 100)}\n\n"
-          f"Oscillator 2:\n"
-          f"Wavetable Position: {randint(0, 255)}\n"
-          f"Unison Spread: {randint(0, 100)}\n\n"
-          f"Mix:\n"
-          f"Osc 1 Level: {randint(0, 100)}\n"
-          f"Osc 2 Level: {randint(0, 100)}\n"
-          f"Noise Level: {randint(0, 100)}\n\n"
-          f"Filter:\n"
-          f"Type: {choice(['12dB Lowpass', '24dB Lowpass', '12dB Highpass', '24dB Highpass'])}\n"
-          f"Resonance: {randint(0, 100)}\n"
-          f"Frequency: {randint(20, 20000)}\n\n"
-          f"ADSR:\n"
-          f"Attack: {uniform(0, 1):.2f}\n"
-          f"Decay: {uniform(0, 1):.2f}\n"
-          f"Sustain: {randint(0, 100)}\n"
-          f"Release: {uniform(0, 1):.2f}\n\n"
-          f"Modulation:\n"
-          f"Source: {choice(['None', 'LFO', 'Envelope', 'Keyboard'])}\n"
-          f"Destination: {choice(['None', 'Pitch', 'Filter', 'Volume'])}\n"
-          f"Amount: {randint(0, 100)}\n\n"
-          f"FX:\n"
-          f"Reverb: Mix {randint(0, 100)}%, Size {randint(0, 100)}%,\n"
-          f"Delay: Time {randint(0, 100)}ms, Mix {randint(0, 100)}%, Feedback {randint(0, 100)}%\n"
-          f"Distortion: {choice(['Off', 'On'])}\n"
-          f"Chorus: Mix {randint(0, 100)}%"
-          """""
-         
+prompt="You are an AI model named \"Wendy\", and when a user gives you a descriptive verbal input of a desired sound, you generate a list of all relevant patch parameter values for the software synthesizer \"Serum\". Do you understand?\n\nYes, I understand. I am capable of taking in verbal input from a user and generating a list of relevant patch parameter values for Serum.",
 
 # App framework
 st.title('🏳️‍⚧️ 🎹Wendy')
-# Generate Text
-prompt = st.text_input('Describe Your Desired Sound')
+st.write("Please input your desired sound in the format 'Generate a [descriptor] sound'")
+prompt = st.text_input('Desired Sound')
 if prompt:
-    response = openai.Completion.create(
-        engine=openai_model,
-        prompt=prompt,
-        max_tokens=2000
-    )        
-    generated_text = response.choices[0].text
-    # Format the generated text with bullet points
-    formatted_text = "- " + generated_text.replace("\n", "\n- ")
+    # Generate Text
+    prompt = f"generate a {prompt.replace('generate a ', '')} sound for the software synthesizer Serum with all relevant parameter values."
+    input_ids = tokenizer.encode(prompt, return_tensors='pt')
+    output = model.generate(input_ids, max_length=1024, pad_token_id=tokenizer.eos_token_id)
+    generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
+
+    # Extract and format relevant patch parameters
+    patch_parameters = generated_text.split('\n')
+    formatted_text = ""
+    for p in patch_parameters:
+        if 'Envelope' in p or 'Oscillator' in p or 'Filter' in p or 'Effects' in p or 'LFO' in p:
+            formatted_text += f"- {p}\n"
     st.markdown(f"**Generated Patch Parameters:**\n\n{formatted_text}")
-    st.write(generated_text)
-    
-    print(response.choices[0].text)
