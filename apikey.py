@@ -1,1 +1,3 @@
-apikey = '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'
+def get_api_key():
+    return "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"
+

@@ -1,11 +1,9 @@
-# Bring in deps
 import os
 import streamlit as st
 import openai
-from apikey import apikey
+from apikey import get_api_key
 
-os.environ['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'] = apikey
-openai.api_key = apikey
+openai.api_key = get_api_key()
 
 from langchain.llms import OpenAI
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
